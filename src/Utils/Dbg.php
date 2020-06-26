@@ -37,7 +37,7 @@ class Dbg {
     /**
      * Dossier de logs
      */
-    const LOG_PATH = ROOT . '/data/logs/';
+    const LOG_PATH = INSTALL_ROOT . '/data/logs/';
 
     /** @var string */
     const MODE_SYSLOG = 'syslog';

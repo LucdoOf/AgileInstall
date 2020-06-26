@@ -4,8 +4,8 @@ require 'src/boot.php';
 
 return [
     "paths"        => [
-        "migrations" => "data/database/migrations",
-        "seeds"      => "data/database/seeds",
+        "migrations" => "database/migrations",
+        "seeds"      => "database/seeds",
     ],
     "environments" => [
         "default_migration_table" => "migrations",

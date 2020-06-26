@@ -2,15 +2,16 @@
 
 use AgileCore\Utils\Dbg;
 
-define("ROOT", dirname(dirname(__FILE__)));
+define("SHARE_ROOT", dirname(dirname(__FILE__)));
+define("INSTALL_ROOT", dirname(dirname(dirname(__FILE__))));
 
-require ROOT . "/vendor/autoload.php";
+require SHARE_ROOT . "/vendor/autoload.php";
 
 ini_set("log_errors", 1);
 ini_set("error_log", Dbg::getFileName());
 ini_set("memory_limit","128M");
 
-require ROOT . "/src/helpers.php";
+require SHARE_ROOT . "/src/helpers.php";
 
-$dotenv = Dotenv\Dotenv::createImmutable(ROOT);
+$dotenv = Dotenv\Dotenv::createImmutable(INSTALL_ROOT);
 $dotenv->load();

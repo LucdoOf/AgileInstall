@@ -153,7 +153,7 @@ class Command extends Model {
     public function generateInvoicePDF() {
         $command = $this;
         ob_start();
-        require ROOT . "/pdf/invoice.php";
+        require SHARE_ROOT . "/pdf/invoice.php";
         $content = ob_get_clean();
         $mpdf = new Mpdf([
             'tempDir'             => '/tmp/mpdf/',
@@ -162,13 +162,13 @@ class Command extends Model {
             'default_font'        => 'sans-serif',
         ]);
 
-        $stylesheet = file_get_contents(ROOT . '/pdf/style.css');
+        $stylesheet = file_get_contents(SHARE_ROOT . '/pdf/style.css');
         $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $mpdf->WriteHTML($content);
 
-        $mpdf->Output(ROOT . "/public/documents/commands/invoices/" . $this->reference . ".pdf", Destination::FILE);
+        $mpdf->Output(INSTALL_ROOT . "/public/documents/commands/invoices/" . $this->reference . ".pdf", Destination::FILE);
         //echo $content;
-        $this->invoice_pdf = public_url() . "documents/commands/invoices/" . $this->reference . ".pdf";
+        $this->invoice_pdf = public_url() . "/documents/commands/invoices/" . $this->reference . ".pdf";
     }
 
 }

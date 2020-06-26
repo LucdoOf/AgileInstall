@@ -212,5 +212,5 @@ function parsePercentage($percentage){
 }
 
 function public_url(){
-    return getenv("DOMAIN") . getenv('RELATIVE_DIR_PUBLIC');
+    return getenv("PUBLIC_DOMAIN") . getenv('RELATIVE_DIR_PUBLIC');
 }

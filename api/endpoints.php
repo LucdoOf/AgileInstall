@@ -48,6 +48,6 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/stats/commands/month', StatsController::class . '.monthCommands');
 
 }, [
-    'cacheFile'     => ROOT . '/data/cache/endpoints.cache',
+    'cacheFile'     => SHARE_ROOT . '/data/cache/endpoints.cache',
     'cacheDisabled' => true,
 ]);
