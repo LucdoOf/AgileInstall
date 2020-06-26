@@ -1,5 +1,4 @@
 <?php
-/** @var $command Command */
 
 $basket = $command->basket();
 $entries = $basket->entries();
@@ -7,8 +6,8 @@ $user = $basket->user();
 $billing_address = $command->billing_address();
 $shipping_address = $command->shipping_address();
 
-use AgileConfig\Config;
 use AgileCore\Models\Command;
+use AgileInstall\Core\Config;
 
 ?>
 <style lang="css">

@@ -4,6 +4,7 @@ namespace AgileCore\Models;
 
 use AgileCore\Utils\Dbg;
 use DateTime;
+use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Mpdf\Output\Destination;
@@ -152,7 +153,7 @@ class Command extends Model {
     public function generateInvoicePDF() {
         $command = $this;
         ob_start();
-        require ROOT . "/public/assets/pdf/invoice.php";
+        require ROOT . "/pdf/invoice.php";
         $content = ob_get_clean();
         $mpdf = new Mpdf([
             'tempDir'             => '/tmp/mpdf/',
@@ -161,8 +162,8 @@ class Command extends Model {
             'default_font'        => 'sans-serif',
         ]);
 
-        $stylesheet = file_get_contents(ROOT . '/public/assets/pdf/style.css');
-        $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
+        $stylesheet = file_get_contents(ROOT . '/pdf/style.css');
+        $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $mpdf->WriteHTML($content);
 
         $mpdf->Output(ROOT . "/public/documents/commands/invoices/" . $this->reference . ".pdf", Destination::FILE);
