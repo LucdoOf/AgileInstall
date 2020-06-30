@@ -6,11 +6,14 @@ use AgileAPI\AgileAPI;
 use AgileCore\Database\SQL;
 use AgileCore\Models\Basket;
 use AgileCore\Models\BasketEntry;
+use AgileCore\Models\Category;
 use AgileCore\Models\Command;
 use AgileCore\Models\Model;
 use AgileCore\Models\Product;
 use AgileCore\Utils\Dbg;
 use AgileCore\Utils\Plural;
+use AgileCore\Utils\Str;
+use DateTime;
 
 class ProductsController extends Controller {
 
@@ -64,6 +67,44 @@ class ProductsController extends Controller {
         }
     }
 
+    public function getCategories() {
+        return Model::listToArray(Category::getAll());
+    }
 
+    public function createCategory(){
+        $category = new Category();
+        $category->hydrate($this->payload());
+        $category->slug = Str::slugify($category->name);
+        $category->created_at = new DateTime();
+        $sameName = Category::select(["name" => $category->name]);
+        $valid = $category->isValid();
+        if($valid === true) {
+            if (!$sameName->exist()) {
+                $category->save();
+                return $this->message("Catégorie " . $category->name . " créé");
+            } else {
+                return $this->error400("Une catégorie du même nom existe déjà");
+            }
+        } else {
+            return $this->error400("Champ " . $valid . " invalide");
+        }
+    }
+
+    public function updateCategory($id){
+        $category = new Category($id);
+        if($category->exist()){
+            $category->hydrate($this->payload());
+            $category->slug = Str::slugify($category->name);
+            $valid = $category->isValid();
+            if($valid === true){
+                $category->save();
+                return $this->message("Catégorie sauvegardée");
+            } else {
+                return $this->error400("Champ " . $valid . " invalide");
+            }
+        } else {
+            return $this->error404("Catégorie introuvable");
+        }
+    }
 
 }

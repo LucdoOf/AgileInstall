@@ -126,6 +126,10 @@ function filterStrictPositiveFloat($float){
     return floatval($float) > 0 ? floatval($float) : null;
 }
 
+function filterStrictPositiveInt($int){
+    return intval($int) > 0 ? intval($int) : null;
+}
+
 function filterPositiveFloat($float){
     return floatval($float) >= 0 ? floatval($float) : null;
 }

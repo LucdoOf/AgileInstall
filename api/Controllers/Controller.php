@@ -15,10 +15,6 @@ class Controller {
     public function __construct() {
         if($this->requireAuth) $this->checkAuthentication();
 
-        if (AgileAPI::getInstance()->method == "POST" && empty(AgileAPI::getInstance()->getPayload()) && !AgileAPI::getInstance()->hasError()) {
-            AgileAPI::getInstance()->error->responseError(ErrorHandler::HTTP_BAD_REQUEST, "Invalid payload");
-        }
-
         if (AgileAPI::getInstance()->hasError()) {
             throw new Exception(AgileAPI::getInstance()->error->getMessage(), AgileAPI::getInstance()->error->getStatus());
         }

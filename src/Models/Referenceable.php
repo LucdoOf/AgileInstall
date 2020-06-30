@@ -27,7 +27,7 @@ trait Referenceable {
 
     private function updateReference() {
         if(!$this->exist() || !$this->isValid("reference")) {
-            $this->reference = static::REFERENCE_PREFIX . '_' . n_digit_random(4);
+            $this->reference = static::REFERENCE_PREFIX . '_' . n_digit_random(6);
             if (static::select(["reference" => $this->reference])->exist()) {
                 $this->updateReference();
             }

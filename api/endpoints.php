@@ -3,6 +3,7 @@
 use AgileAPI\Controllers\AuthController;
 use AgileAPI\Controllers\BasketsController;
 use AgileAPI\Controllers\CommandsController;
+use AgileAPI\Controllers\PagesController;
 use AgileAPI\Controllers\ProductsController;
 use AgileAPI\Controllers\StatsController;
 use AgileAPI\Controllers\UsersController;
@@ -46,6 +47,20 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('DELETE', '/commands/{id:\d+}/delete', CommandsController::class . '.deleteCommand');
 
     $r->addRoute('GET', '/stats/commands/month', StatsController::class . '.monthCommands');
+
+    $r->addRoute('GET', '/pages', PagesController::class . '.getPages');
+
+    $r->addRoute('GET', '/translations/{locale}', PagesController::class . '.getTranslations');
+
+    $r->addRoute('POST', '/translations/{locale}/{key}/update', PagesController::class . '.updateTranslation');
+
+    $r->addRoute('POST', '/translations/{locale}/refresh', PagesController::class . '.refreshTranslations');
+
+    $r->addRoute('GET', '/categories', ProductsController::class . '.getCategories');
+
+    $r->addRoute("PUT", "/categories/create", ProductsController::class . '.createCategory');
+
+    $r->addRoute("POST", "/categories/{id:\d+}/update", ProductsController::class . '.updateCategory');
 
 }, [
     'cacheFile'     => SHARE_ROOT . '/data/cache/endpoints.cache',

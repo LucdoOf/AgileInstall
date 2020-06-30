@@ -236,7 +236,13 @@ abstract class Model {
      * Retourne true si un l'objet est valide selon la constante conditions, sinon retourne le nom du champ qui ne va pas
      */
     public function isValid($key = null){
-        foreach ((is_null($key) ? static::CONDITIONS : [$key => static::CONDITIONS[$key]]) as $key => $condition) {
+        if(is_null($key)){
+            foreach (static::CONDITIONS as $key => $condition) {
+                if ($this->isValid($key) !== true) return $key;
+            }
+            return true;
+        } else {
+            $condition = static::CONDITIONS[$key];
             if (is_string($condition) || is_int($condition)) {
                 if (startsWith($condition, "/") && endsWith($condition, "/")) {
                     if (!preg_match($condition, $this->{$key})) return $key;

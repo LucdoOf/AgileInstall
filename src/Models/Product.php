@@ -13,6 +13,7 @@ class Product extends Model {
         "id",
         "reference",
         "name",
+        "category_id",
         "description",
         "stock",
         "price",
@@ -21,7 +22,9 @@ class Product extends Model {
     ];
 
     public const CONDITIONS = [
+        "name" => "filterString",
         "stock" => [FILTER_VALIDATE_INT, ['min_range' => 0]],
+        "category_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
         "price" => 'filterStrictPositiveFloat',
         "boosted" => FILTER_VALIDATE_BOOLEAN,
         "enabled" => FILTER_VALIDATE_BOOLEAN
@@ -31,7 +34,30 @@ class Product extends Model {
     var $description = "";
     var $stock = -1;
     var $price = -1;
+    var $category_id = -1;
+    var $category = null;
     var $boosted = false;
     var $enabled = false;
+
+    /**
+     * Retourne la catégorie associée au produit
+     *
+     * @return Category
+     */
+    public function category() {
+        if(is_null($this->category)){
+            $this->category = new Category($this->category_id);
+        }
+        return $this->category;
+    }
+
+    /**
+     * @see Model
+     */
+    public function toArray() {
+        $parentArray = parent::toArray();
+        if($this->category()->exist()) $parentArray["category"] = $this->category()->toArray();
+        return $parentArray;
+    }
 
 }

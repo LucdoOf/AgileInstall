@@ -6,7 +6,8 @@
         "symfony/yaml": "^5.0",
       "ext-json": "*",
       "ext-pdo": "*",
-      "mpdf/mpdf": "^8.0"
+      "mpdf/mpdf": "^8.0",
+      "gettext/gettext": "^5.5"
     },
     "autoload": {
         "psr-4": {
