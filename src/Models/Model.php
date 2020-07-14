@@ -234,10 +234,14 @@ abstract class Model {
 
     /**
      * Retourne true si un l'objet est valide selon la constante conditions, sinon retourne le nom du champ qui ne va pas
+     *
+     * @param null $key Clefs à tester, si nulle toutes les clefs seront testées
+     * @param array $excludedKeys Clefs à ne pas tester en cas de clé non nulle
+     * @return bool|int|string
      */
-    public function isValid($key = null){
+    public function isValid($key = null, $excludedKeys = []){
         if(is_null($key)){
-            foreach (static::CONDITIONS as $key => $condition) {
+            foreach (array_delete_keys(static::CONDITIONS, $excludedKeys) as $key => $condition) {
                 if ($this->isValid($key) !== true) return $key;
             }
             return true;

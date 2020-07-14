@@ -49,8 +49,8 @@ try {
             $httpStatus = ErrorHandler::HTTP_NOT_FOUND;
             break;
         case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-            $data = $api->error->responseError(ErrorHandler::HTTP_BAD_REQUEST, 'Unauthorized HTTP method ' . $httpMethod)->getResponse();
-            $httpStatus = ErrorHandler::HTTP_BAD_REQUEST;
+            $data = $api->error->responseError(ErrorHandler::HTTP_METHOD_NOT_ALLOWED, 'Unauthorized HTTP method ' . $httpMethod)->getResponse();
+            $httpStatus = ErrorHandler::HTTP_METHOD_NOT_ALLOWED;
             break;
         case FastRoute\Dispatcher::FOUND:
             // Call method from defined route

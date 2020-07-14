@@ -13,7 +13,12 @@ class Controller {
     protected $requireAuth = true;
 
     public function __construct() {
-        if($this->requireAuth) $this->checkAuthentication();
+        if($this->requireAuth) {
+            $this->checkAuthentication();
+            if (!$this->isAuth() && AgileAPI::getInstance()->method !== "GET") {
+                AgileAPI::getInstance()->error->responseError(ErrorHandler::HTTP_FORBIDDEN, "Impossible d'effectuer cela en tant qu'invité");
+            }
+        }
 
         if (AgileAPI::getInstance()->hasError()) {
             throw new Exception(AgileAPI::getInstance()->error->getMessage(), AgileAPI::getInstance()->error->getStatus());
@@ -21,25 +26,38 @@ class Controller {
     }
 
     public function checkAuthentication() {
+        $admin = $this->getLoggedAdministrator();
+        if(is_null($admin)) {
+            if ((bool)getenv("ALLOW_GUESTS") !== true) {
+                AgileAPI::getInstance()->error->responseError(ErrorHandler::HTTP_UNAUTHORIZED, "Veuillez vous identifier");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function getLoggedAdministrator() {
         if (!empty(AgileAPI::getInstance()->authenticationToken)) {
             $dataDecoded = base64_decode(AgileAPI::getInstance()->authenticationToken);
-            if($dataDecoded) {
-                $dataArray = explode(":",$dataDecoded);
-                if($dataArray && count($dataArray) == 2) {
+            if ($dataDecoded) {
+                $dataArray = explode(":", $dataDecoded);
+                if ($dataArray && count($dataArray) == 2) {
                     $user = $dataArray[0];
                     $password = $dataArray[1];
                     $administrator = Administrator::select(["name" => $user]);
-                    if($administrator->exist()){
-                        if ($password === $administrator->password){
-                            // Dbg::success("Administrator " . $user . " logged from ip " . getIpAddress());
-                            return true;
+                    if ($administrator->exist()) {
+                        if ($password === $administrator->password) {
+                            return $administrator;
                         }
                     }
                 }
             }
         }
-        AgileAPI::getInstance()->error->responseError(ErrorHandler::HTTP_UNAUTHORIZED, "Veuillez vous identifier");
-        return false;
+        return null;
+    }
+
+    public function isAuth() {
+        return !is_null($this->getLoggedAdministrator());
     }
 
     public function error404($message){
@@ -71,7 +89,7 @@ class Controller {
     public function getFilters(){
         $filters = [];
         if (isset(AgileAPI::getInstance()->getPayload()["filters"])) {
-            foreach (AgileAPI::getInstance()->getPayload()["filters"] as $k => $v) {
+            foreach (is_array(AgileAPI::getInstance()->getPayload()["filters"]) ? AgileAPI::getInstance()->getPayload()["filters"] : json_decode(AgileAPI::getInstance()->getPayload()["filters"]) as $k => $v) {
                 if (!is_null($v)) $filters[$k] = $v;
             }
         }
@@ -79,11 +97,15 @@ class Controller {
     }
 
     public function getSortKey(){
-        return AgileAPI::getInstance()->getPayload()["sort"];
+        return isset(AgileAPI::getInstance()->getPayload()["sort"]) ? AgileAPI::getInstance()->getPayload()["sort"] : null;
     }
 
-    public function payload(){
-        return AgileAPI::getInstance()->getPayload();
+    public function payload($key = null, $default = null){
+        if (is_null($key)) {
+            return AgileAPI::getInstance()->getPayload();
+        } else {
+            return isset(AgileAPI::getInstance()->getPayload()[$key]) ? AgileAPI::getInstance()->getPayload()[$key] : $default;
+        }
     }
 
 }

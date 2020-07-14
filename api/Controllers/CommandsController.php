@@ -63,6 +63,22 @@ class CommandsController extends Controller {
         }
     }
 
+    public function updateCommandTracking($id){
+        $command = new Command($id);
+        if($command->exist()){
+            $command->tracking_number = AgileAPI::getInstance()->getPayload()["tracking_number"];
+            $valid = $command->isValid();
+            if($valid === true){
+                $command->save();
+                return $this->message("Numéro de suivi mis à jour");
+            } else {
+                return $this->error400("Champ invalide (" . $valid . ")");
+            }
+        } else {
+            return $this->error404("Commande introuvable");
+        }
+    }
+
     public function createCommand(){
         if(isset($this->payload()['user']) && isset($this->payload()['entries'])) {
             $userArray = $this->payload()['user'];

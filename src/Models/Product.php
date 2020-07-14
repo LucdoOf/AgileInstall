@@ -52,11 +52,21 @@ class Product extends Model {
     }
 
     /**
+     * Retourne la liste des médias associés
+     *
+     * @return ProductMedia[]
+     */
+    public function getLinkedMedias() {
+        return ProductMedia::getAll(['product_id' => $this->id]);
+    }
+
+    /**
      * @see Model
      */
     public function toArray() {
         $parentArray = parent::toArray();
         if($this->category()->exist()) $parentArray["category"] = $this->category()->toArray();
+        $parentArray['linked_medias'] = $this->getLinkedMedias();
         return $parentArray;
     }
 

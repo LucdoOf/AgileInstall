@@ -87,4 +87,15 @@ class BasketEntry extends Model {
         return !is_null($this->entry_discount) && (float)$this->entry_discount > 0;
     }
 
+    /**
+     * @see Model
+     *
+     * @return array
+     */
+    public function toArray() {
+        $parentArray = parent::toArray();
+        if ($this->product()->exist()) $parentArray["product"] = $this->product()->toArray();
+        return $parentArray;
+    }
+
 }

@@ -14,6 +14,7 @@ class ErrorHandler {
     const HTTP_NOT_FOUND = 404;
     const HTTP_UNAUTHORIZED = 401;
     const HTTP_FORBIDDEN = 403;
+    const HTTP_METHOD_NOT_ALLOWED = 405;
     const HTTP_REQUEST_LIMIT = 429;
 
     /**

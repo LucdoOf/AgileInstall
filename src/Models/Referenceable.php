@@ -14,8 +14,7 @@ trait Referenceable {
 
     public $reference = "";
 
-    public function hydrate($data)
-    {
+    public function hydrate($data) {
         parent::hydrate($data);
         $this->updateReference();
     }
@@ -25,7 +24,7 @@ trait Referenceable {
         parent::save();
     }
 
-    private function updateReference() {
+    public function updateReference() {
         if(!$this->exist() || !$this->isValid("reference")) {
             $this->reference = static::REFERENCE_PREFIX . '_' . n_digit_random(6);
             if (static::select(["reference" => $this->reference])->exist()) {
@@ -34,13 +33,17 @@ trait Referenceable {
         }
     }
 
-    public function isValid($key = null){
+    public function isValid($key = null, $excludedKeys = []){
         if($key == "reference"){
-            if (!filter_var($this->{$key}, FILTER_CALLBACK, ['options' => 'validateReference'])) return $key;
+            if (!self::testReference($this->{$key})) return $key;
             return true;
         } else {
-            return parent::isValid($key);
+            return parent::isValid($key, $excludedKeys);
         }
+    }
+
+    public static function testReference($reference){
+        return filter_var($reference, FILTER_CALLBACK, ['options' => 'validateReference']);
     }
 
 }

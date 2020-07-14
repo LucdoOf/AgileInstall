@@ -10,6 +10,7 @@ use AgileCore\Models\Category;
 use AgileCore\Models\Command;
 use AgileCore\Models\Model;
 use AgileCore\Models\Product;
+use AgileCore\Models\ProductMedia;
 use AgileCore\Utils\Dbg;
 use AgileCore\Utils\Plural;
 use AgileCore\Utils\Str;
@@ -104,6 +105,42 @@ class ProductsController extends Controller {
             }
         } else {
             return $this->error404("Catégorie introuvable");
+        }
+    }
+
+    public function uploadMedia($id){
+        $product = new Product($id);
+        if($product->exist()){
+            if(!empty($_FILES)){
+                $file = array_shift($_FILES);
+                $productMedia = new ProductMedia();
+                $productMedia->hydrate($this->payload());
+                $productMedia->product_id = $product->id;
+                $productMedia->mime = $file['type'];
+                $productMedia->updateReference();
+                $valid = $productMedia->isValid(null, ['url']);
+                if($valid === true) {
+                    $tmpName = $file['tmp_name'];
+                    if(move_uploaded_file($tmpName, INSTALL_ROOT . '/public/uploads/products/medias/' . $productMedia->reference . '.' . mime2ext($productMedia->mime))){
+                        $productMedia->url = public_url() . '/uploads/products/medias/' . $productMedia->reference . '.' . mime2ext($productMedia->mime);
+                        $valid = $productMedia->isValid();
+                        if($valid === true) {
+                            $productMedia->save();
+                            return $this->message("Média téléchargé");
+                        } else {
+                            return $this->error400('Champ ' . $valid . ' invalide (2)');
+                        }
+                    } else {
+                        return $this->error400('Une erreur est survenue lors du téléchargement du fichier');
+                    }
+                } else {
+                    return $this->error400('Champ ' . $valid . ' invalide');
+                }
+            } else {
+                return $this->error400("Veuillez renseigner un fichier");
+            }
+        } else {
+            return $this->error404("Produit introuvable");
         }
     }
 

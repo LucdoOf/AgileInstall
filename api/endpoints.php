@@ -14,7 +14,7 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
 
     $r->addRoute('POST', '/products/{id:\d+}/update', ProductsController::class . ".updateProduct");
 
-    $r->addRoute('POST', '/products/{id:\d+}/commands/page/{page:\d+}', ProductsController::class . ".getProductLinkedCommands");
+    $r->addRoute('GET', '/products/{id:\d+}/commands/page/{page:\d+}', ProductsController::class . ".getProductLinkedCommands");
 
     $r->addRoute('PUT', '/products/create', ProductsController::class . ".createProduct");
 
@@ -26,7 +26,7 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
 
     $r->addRoute('GET', '/commands', CommandsController::class . ".getCommands");
 
-    $r->addRoute('POST', '/commands/page/{page:\d+}', CommandsController::class . ".getCommandsPage");
+    $r->addRoute('GET', '/commands/page/{page:\d+}', CommandsController::class . ".getCommandsPage");
 
     $r->addRoute('GET', '/commands/{id:\d+}/basket', CommandsController::class . ".getCommandBasket");
 
@@ -34,7 +34,7 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
 
     $r->addRoute('GET', '/stats/commands/today', StatsController::class . ".todayCommands");
 
-    $r->addRoute('POST', '/users/page/{page:\d+}', UsersController::class . ".getUsersPage");
+    $r->addRoute('GET', '/users/page/{page:\d+}', UsersController::class . ".getUsersPage");
 
     $r->addRoute('GET', '/users', UsersController::class . ".getUsers");
 
@@ -61,6 +61,10 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute("PUT", "/categories/create", ProductsController::class . '.createCategory');
 
     $r->addRoute("POST", "/categories/{id:\d+}/update", ProductsController::class . '.updateCategory');
+
+    $r->addRoute("POST", "/products/{id:\d+}/medias/upload", ProductsController::class . '.uploadMedia');
+
+    $r->addRoute("POST", "/commands/{id:\d+}/tracking/update", CommandsController::class . '.updateCommandTracking');
 
 }, [
     'cacheFile'     => SHARE_ROOT . '/data/cache/endpoints.cache',

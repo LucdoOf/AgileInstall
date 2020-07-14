@@ -40,21 +40,35 @@ class Category extends Model {
     }
 
     /**
+     * Retourne le parent le plus haut ou la catégorie si pas de parent
+     *
+     * @return Category
+     */
+    public function root() {
+        if($this->parent()->exist()){
+            return $this->parent()->root()->exist() ? $this->parent()->root() : $this;
+        }
+        return $this;
+    }
+
+    /**
      * @see Model
      */
     public function toArray() {
         $parentArray = parent::toArray();
         if($this->parent()->exist()) $parentArray["parent"] = $this->parent()->toArray();
+        $parentArray["root"] = $this->root();
         return $parentArray;
     }
 
     /**
+     * @param null $key
+     * @param array $excludedKeys
+     * @return bool|int|string
      * @see Model
      *
-     * @param null $key
-     * @return bool|int|string
      */
-    public function isValid($key = null) {
+    public function isValid($key = null, $excludedKeys = []) {
         if(is_null($key) || $key !== 'parent_id') {
             return parent::isValid($key);
         } else {

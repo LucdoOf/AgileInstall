@@ -2,6 +2,7 @@
 
 namespace AgileCore\Models;
 
+use AgileCore\Core\Shipping\Transporter;
 use AgileCore\Utils\Dbg;
 use DateTime;
 use Mpdf\HTMLParserMode;
@@ -30,7 +31,10 @@ class Command extends Model {
         "status",
         "billing_address_id",
         "shipping_address_id",
-        "invoice_pdf"
+        "invoice_pdf",
+        "transporter_id",
+        "shipping_fees",
+        "tracking_number"
     ];
 
     public const CONDITIONS = [
@@ -39,7 +43,10 @@ class Command extends Model {
         "status" => "filterCommandStatus",
         "billing_address_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
         "shipping_address_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
-        "invoice_pdf" => "filterUrl nullable"
+        "invoice_pdf" => "filterUrl nullable",
+        "transporter_id" => 'filterString',
+        "shipping_fees" => "filterPositiveFloat",
+        "tracking_number" => "filterString nullable"
     ];
 
     public const STATUS_DRAFT = "draft";
@@ -47,7 +54,7 @@ class Command extends Model {
     public const STATUS_PAYED = "payed";
     public const STATUS_EXPEDITED = "expedited";
     public const STATUS_IN_DELIVERING = "in-delivering";
-    public const STATUS_RECEIVED = "received";
+    public const STATUS_DELIVERED = "delivered";
     public const STATUS_CANCELED_BY_BUYER = "canceled-by-buyer";
     public const STATUS_CANCELED_BY_PLATFORM = "canceled-by-platform";
     public const STATUS_REFUNDED = "refunded";
@@ -59,7 +66,7 @@ class Command extends Model {
       self::STATUS_PAYED,
       self::STATUS_EXPEDITED,
       self::STATUS_IN_DELIVERING,
-      self::STATUS_RECEIVED,
+      self::STATUS_DELIVERED,
       self::STATUS_CANCELED_BY_BUYER,
       self::STATUS_CANCELED_BY_PLATFORM,
       self::STATUS_REFUNDED,
@@ -75,6 +82,10 @@ class Command extends Model {
     var $shipping_address_id = -1;
     var $shipping_address = null;
     var $invoice_pdf = null;
+    var $transporter_id = '';
+    var $transporter = null;
+    var $shipping_fees = 0.0;
+    var $tracking_number = null;
 
     /**
      * Sauvegarde l'objet et en créé une version alternative
@@ -110,6 +121,7 @@ class Command extends Model {
         if(!is_null($this->basket())) $parentArray["basket"] = $this->basket()->toArray();
         if(!is_null($this->billing_address())) $parentArray["billing_address"] = $this->billing_address()->toArray();
         if(!is_null($this->shipping_address())) $parentArray["shipping_address"] = $this->shipping_address()->toArray();
+        if(!is_null($this->transporter())) $parentArray['transporter'] = $this->transporter()::toArray();
         return $parentArray;
     }
 
@@ -146,12 +158,23 @@ class Command extends Model {
     }
 
     /**
+     * Retourne le transporteur de la commande
+     *
+     * @return Transporter
+     */
+    public function transporter() {
+        if(is_null($this->transporter)){
+            $this->transporter = Transporter::getByIdentifier($this->transporter_id);
+        }
+        return $this->transporter;
+    }
+
+    /**
      * Génère le pdf de facture
      *
      * @throws MpdfException
      */
     public function generateInvoicePDF() {
-        $command = $this;
         ob_start();
         require SHARE_ROOT . "/pdf/invoice.php";
         $content = ob_get_clean();
