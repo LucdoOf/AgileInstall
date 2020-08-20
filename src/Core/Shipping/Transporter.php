@@ -2,7 +2,7 @@
 
 namespace AgileCore\Core\Shipping;
 
-use AgileInstall\Core\Config;
+use AgileInstall\Config;
 use DateTime;
 
 /**

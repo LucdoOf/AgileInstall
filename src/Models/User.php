@@ -8,6 +8,7 @@ class User extends Model {
 
     public const STORAGE = "users";
     public const REFERENCE_PREFIX = "USR";
+    public const NAME = 'user';
 
     public const COLUMNS = [
         "id",
@@ -45,13 +46,18 @@ class User extends Model {
     }
 
     /**
-     * @see Model
+     * Retourne la liste des mails envoyés à cet utilisateur
      *
-     * @return array
+     * @return Mail[]
      */
-    public function toArray() {
-        $parentArray = parent::toArray();
+    public function getSentMails() {
+        return Mail::getAll(["user_id" => $this->id]);
+    }
+
+    public function toArray($excludedKeys = []) {
+        $parentArray = parent::toArray($excludedKeys);
         $parentArray['linked_addresses'] = Model::listToArray($this->getLinkedAddresses());
+        $parentArray['sent_mails'] = Model::listToArray($this->getSentMails());
         return $parentArray;
     }
 

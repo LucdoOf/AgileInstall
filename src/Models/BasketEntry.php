@@ -5,6 +5,7 @@ namespace AgileCore\Models;
 class BasketEntry extends Model {
 
     public const STORAGE = "basket_entries";
+    public const NAME = "basket_entry";
 
     public const COLUMNS = [
         "id",
@@ -19,8 +20,8 @@ class BasketEntry extends Model {
         "basket_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
         "product_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
         'quantity' => [FILTER_VALIDATE_INT, ['min_range' => 1]],
-        "entry_price" => 'filterStrictPositiveFloat',
-        "entry_discount" => 'filterPositiveFloat'
+        "entry_price" => 'filterStrictPositiveFloat nullable', // Null jusqu'à validation de la commande pour éviter les problèmes de fin de réductions par ex
+        "entry_discount" => 'filterPositiveFloat nullable' // Null jusqu'à validation de la commande -------------------------- // ---------------------------
     ];
 
     var $basket_id = -1;
@@ -88,12 +89,10 @@ class BasketEntry extends Model {
     }
 
     /**
-     * @see Model
-     *
-     * @return array
+     * @inheritDoc
      */
-    public function toArray() {
-        $parentArray = parent::toArray();
+    public function toArray($excludedKeys = []) {
+        $parentArray = parent::toArray($excludedKeys);
         if ($this->product()->exist()) $parentArray["product"] = $this->product()->toArray();
         return $parentArray;
     }

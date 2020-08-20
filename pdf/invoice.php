@@ -7,7 +7,7 @@ $billing_address = $command->billing_address();
 $shipping_address = $command->shipping_address();
 
 use AgileCore\Models\Command;
-use AgileInstall\Core\Config;
+use AgileInstall\Config;
 
 ?>
 <style lang="css">

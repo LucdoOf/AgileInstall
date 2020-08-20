@@ -77,4 +77,17 @@ class Str {
         return $text;
     }
 
+    /**
+     * Vérifie si une chaîne de caractère commence par une autre chaîne de caractère
+     *
+     * @param $string
+     * @param $startString
+     * @return bool
+     */
+    public static function startsWith ($string, $startString) {
+        $len = strlen($startString);
+        return (substr($string, 0, $len) === $startString);
+    }
+
+
 }

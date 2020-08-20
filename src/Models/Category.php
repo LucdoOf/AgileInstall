@@ -4,7 +4,8 @@ namespace AgileCore\Models;
 
 class Category extends Model {
 
-    const STORAGE = 'categories';
+    public const STORAGE = 'categories';
+    public const NAME = 'category';
 
     const COLUMNS = [
         "id",
@@ -17,13 +18,13 @@ class Category extends Model {
     const CONDITIONS = [
         "name" => "filterString",
         "slug" => "filterString",
-        "parent_id" => [FILTER_VALIDATE_INT, ['min_range' => 0]],
+        "parent_id" => "filterStrictPositiveInt nullable",
         "created_at" => "filterDate"
     ];
 
     var $name = "";
     var $slug = "";
-    var $parent_id = 0;
+    var $parent_id = null;
     var $created_at = null;
     var $parent = null;
 
@@ -52,10 +53,10 @@ class Category extends Model {
     }
 
     /**
-     * @see Model
+     * @inheritDoc
      */
-    public function toArray() {
-        $parentArray = parent::toArray();
+    public function toArray($excludedKeys = []) {
+        $parentArray = parent::toArray($excludedKeys);
         if($this->parent()->exist()) $parentArray["parent"] = $this->parent()->toArray();
         $parentArray["root"] = $this->root();
         return $parentArray;

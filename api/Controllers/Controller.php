@@ -6,6 +6,7 @@ use AgileAPI\AgileAPI;
 use AgileAPI\ErrorHandler;
 use AgileCore\Models\Administrator;
 use AgileCore\Utils\Dbg;
+use DateTime;
 use Exception;
 
 class Controller {
@@ -32,6 +33,9 @@ class Controller {
                 AgileAPI::getInstance()->error->responseError(ErrorHandler::HTTP_UNAUTHORIZED, "Veuillez vous identifier");
                 return false;
             }
+        } else {
+            $admin->last_seen = new DateTime();
+            $admin->save();
         }
         return true;
     }

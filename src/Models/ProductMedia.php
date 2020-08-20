@@ -8,6 +8,7 @@ class ProductMedia extends Model {
 
     public const STORAGE = 'product_medias';
     public const REFERENCE_PREFIX = 'PMD';
+    public const NAME = 'product_media';
 
     public const COLUMNS = [
       'id',

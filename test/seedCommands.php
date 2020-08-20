@@ -1,16 +1,19 @@
 <?php
 
+use AgileCore\Core\Communication\Mailer;
 use AgileCore\Models\Basket;
 use AgileCore\Models\BasketEntry;
 use AgileCore\Models\Command;
 use AgileCore\Models\Product;
+use AgileCore\Models\Transaction;
 use AgileCore\Models\User;
+use AgileInstall\Config;
 
-require "../src/boot.php";
+if(!defined(SHARE_ROOT)) require_once "../src/boot.php";
 
 $startStamp = (new DateTime())->getTimestamp();
 
-echo "Started job <br>";
+echo "Started commands job <br>";
 
 $products = Product::getAll();
 $users = User::getAll();
@@ -37,9 +40,12 @@ for($i = 0; $i < 100; $i++){
     $command->status = Command::STATUS[mt_rand(0,count(Command::STATUS)-1)];
     $command->billing_address_id = $user->getLinkedAddresses()[0]->id;
     $command->shipping_address_id = $user->getLinkedAddresses()[0]->id;
+    $command->transporter_id = (Config::AVAILABLE_TRANSPORTERS[mt_rand(0, count(Config::AVAILABLE_TRANSPORTERS)-1)])::getIdentifier();
     $command->save();
+    Mailer::orderSuccessMail($command);
+    Transaction::createFromCommand($command, null);
 }
 
 $endStamp = (new DateTime())->getTimestamp();
 
-echo "Job done in " . ($endStamp-$startStamp) . " seconds";
+echo "Job done in " . ($endStamp-$startStamp) . " seconds <br>";

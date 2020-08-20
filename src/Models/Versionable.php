@@ -51,7 +51,12 @@ trait Versionable {
         return $objs;
     }
 
-    private static function getHistoryTable(){
+    /**
+     * Retourne le nom de la table de stockage de l'historique
+     *
+     * @return string
+     */
+    public static function getHistoryTable(){
         return static::STORAGE."_history";
     }
 

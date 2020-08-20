@@ -1,7 +1,10 @@
 <?php
 
+use AgileCore\Core\Shipping\Transporter;
 use AgileCore\Models\Command;
+use AgileCore\Models\Transaction;
 use AgileCore\Utils\Dbg;
+use AgileInstall\Config;
 
 /**
  * @return bool
@@ -130,6 +133,10 @@ function filterStrictPositiveInt($int){
     return intval($int) > 0 ? intval($int) : null;
 }
 
+function filterPositiveInt($int){
+    return intval($int) >= 0 ? intval($int) : null;
+}
+
 function filterPositiveFloat($float){
     return floatval($float) >= 0 ? floatval($float) : null;
 }
@@ -158,10 +165,15 @@ function filterIp($ip){
 }
 
 function filterCommandStatus($status){
-    if(in_array($status, Command::STATUS)){
-        return $status;
-    }
-    return null;
+    return in_array($status, Command::STATUS) ? $status : null;
+}
+
+function filterTransactionStatus($status) {
+    return in_array($status, Transaction::STATUS) ? $status : null;
+}
+
+function filterTransactionType($status) {
+    return in_array($status, [Transaction::TYPE_PAYMENT, Transaction::TYPE_REFUND]) ? $status : null;
 }
 
 function filterString($string){
@@ -188,6 +200,14 @@ function filterCountry($string){
 function filterUrl($url){
     if(filter_var($url, FILTER_VALIDATE_URL) !== false){
         return $url;
+    }
+    return null;
+}
+
+function filterTransporter($transporter){
+    Dbg::logs($transporter);
+    if(in_array(Transporter::getByIdentifier($transporter), Config::AVAILABLE_TRANSPORTERS)) {
+        return $transporter;
     }
     return null;
 }

@@ -14,6 +14,7 @@ use function Sodium\compare;
 abstract class Model {
 
     const STORAGE = "";
+    const NAME = "";
     const SQL_AS = "";
     const SQL_JOINS = [];
     const COLUMNS = [];
@@ -89,9 +90,10 @@ abstract class Model {
     /**
      * Retourne la liste des propriétés de l'objet listées dans la constante columns
      *
+     * @param array $excludedKeys Clés finales de l'array a supprimer (pour empêcher de la récursivité par exemple)
      * @return array
      */
-    public function toArray(){
+    public function toArray($excludedKeys = []){
         $values = self::toInitialArray();
          foreach ($this::COLUMNS as $column) {
              if ($this->{$column} instanceof DateTime) {
@@ -104,6 +106,8 @@ abstract class Model {
              }
          }
         $values["additional_data"] = $this->additional_data;
+        $values["type"] = static::NAME;
+        array_delete_keys($values, $excludedKeys);
         return $values;
     }
 
@@ -179,7 +183,7 @@ abstract class Model {
      * @return static[]
      */
     public static function search($query, $order = null, $limit = null, $offset = null){
-        return SQL::instantiateAll(SQL::search(static::STORAGE, array_keys(static::COLUMNS), $query, $order, $limit, $offset), static::class);
+        return SQL::instantiateAll(SQL::search(static::STORAGE, static::COLUMNS, $query, $order, $limit, $offset), static::class);
     }
 
     /**
@@ -281,12 +285,13 @@ abstract class Model {
      * Retourne une liste de to array
      *
      * @param $objArray static[]
+     * @param array $excludedKeys
      * @return array
      */
-    static function listToArray($objArray){
+    static function listToArray($objArray, $excludedKeys = []){
         $toReturn = [];
         foreach ($objArray as $item){
-            $toReturn[] = $item->toArray();
+            $toReturn[] = $item->toArray($excludedKeys);
         }
         return $toReturn;
     }

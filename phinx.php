@@ -1,6 +1,6 @@
 <?php
 
-require 'src/boot.php';
+require '../share/src/boot.php';
 
 return [
     "paths"        => [
@@ -13,9 +13,9 @@ return [
         "main"                    => [
             "adapter" => "mysql",
             "host"    => getenv('MYSQL_HOST'),
-            "name"    => getenv('MYSQL_DB'),
+            "name"    => getenv('MYSQL_DATABASE'),
             "user"    => getenv('MYSQL_USER'),
-            "pass"    => getenv('MYSQL_PASS'),
+            "pass"    => getenv('MYSQL_PASSWORD'),
             "port"    => 3306,
         ],
     ],

@@ -17,6 +17,7 @@ class Command extends Model {
 
     public const STORAGE = "commands";
     public const REFERENCE_PREFIX = "CMD";
+    public const NAME = "command";
     public const SQL_JOINS = [
       [Basket::class => "id", Command::class => "basket_id"],
       [User::class => "id", Basket::class => "user_id"],
@@ -44,9 +45,9 @@ class Command extends Model {
         "billing_address_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
         "shipping_address_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
         "invoice_pdf" => "filterUrl nullable",
-        "transporter_id" => 'filterString',
+        "transporter_id" => 'filterTransporter',
         "shipping_fees" => "filterPositiveFloat",
-        "tracking_number" => "filterString nullable"
+        "tracking_number" => "filterString nullable",
     ];
 
     public const STATUS_DRAFT = "draft";
@@ -86,6 +87,7 @@ class Command extends Model {
     var $transporter = null;
     var $shipping_fees = 0.0;
     var $tracking_number = null;
+    var $transactions = [];
 
     /**
      * Sauvegarde l'objet et en créé une version alternative
@@ -114,14 +116,23 @@ class Command extends Model {
     }
 
     /**
-     * @see Model
+     * @return Transaction[]
      */
-    public function toArray() {
-        $parentArray = parent::toArray();
+    public function transactions() {
+        if(empty($this->transactions)) $this->transactions = Transaction::getAll(["command_id" => $this->id]);
+        return $this->transactions;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray($excludedKeys = []) {
+        $parentArray = parent::toArray($excludedKeys);
         if(!is_null($this->basket())) $parentArray["basket"] = $this->basket()->toArray();
         if(!is_null($this->billing_address())) $parentArray["billing_address"] = $this->billing_address()->toArray();
         if(!is_null($this->shipping_address())) $parentArray["shipping_address"] = $this->shipping_address()->toArray();
         if(!is_null($this->transporter())) $parentArray['transporter'] = $this->transporter()::toArray();
+        if(!is_null($this->transactions)) $parentArray['transactions'] = Model::listToArray($this->transactions(), ['command']);
         return $parentArray;
     }
 
@@ -176,6 +187,7 @@ class Command extends Model {
      */
     public function generateInvoicePDF() {
         ob_start();
+        $command = $this;
         require SHARE_ROOT . "/pdf/invoice.php";
         $content = ob_get_clean();
         $mpdf = new Mpdf([
@@ -192,6 +204,16 @@ class Command extends Model {
         $mpdf->Output(INSTALL_ROOT . "/public/documents/commands/invoices/" . $this->reference . ".pdf", Destination::FILE);
         //echo $content;
         $this->invoice_pdf = public_url() . "/documents/commands/invoices/" . $this->reference . ".pdf";
+    }
+
+    /**
+     * Met à jour le status de la commande
+     *
+     * @param $status
+     */
+    public function setStatus(string $status) {
+        $this->status = $status;
+        $this->save();
     }
 
 }

@@ -1,12 +1,17 @@
 <?php
 
+use AgileAPI\Controllers\AdminController;
 use AgileAPI\Controllers\AuthController;
 use AgileAPI\Controllers\BasketsController;
 use AgileAPI\Controllers\CommandsController;
+use AgileAPI\Controllers\MailsController;
 use AgileAPI\Controllers\PagesController;
 use AgileAPI\Controllers\ProductsController;
+use AgileAPI\Controllers\ShippingController;
 use AgileAPI\Controllers\StatsController;
+use AgileAPI\Controllers\TransactionsController;
 use AgileAPI\Controllers\UsersController;
+use AgileAPI\Controllers\VisitsController;
 
 return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
 
@@ -65,6 +70,18 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute("POST", "/products/{id:\d+}/medias/upload", ProductsController::class . '.uploadMedia');
 
     $r->addRoute("POST", "/commands/{id:\d+}/tracking/update", CommandsController::class . '.updateCommandTracking');
+
+    $r->addRoute("GET", "/shipping/transporters", ShippingController::class . '.getAvailableTransporters');
+
+    $r->addRoute("PUT", "/mails/send", MailsController::class . '.sendMail');
+
+    $r->addRoute("GET", "/search/{searchKey}", AdminController::class . '.search');
+
+    $r->addRoute("GET", "/transactions/page/{page:\d+}", TransactionsController::class . ".getTransactions");
+
+    $r->addRoute("GET", "/transactions/{id:\d+}", TransactionsController::class . ".getTransaction");
+
+    $r->addRoute("GET", "/visits/page/{page:\d+}", VisitsController::class . ".getVisits");
 
 }, [
     'cacheFile'     => SHARE_ROOT . '/data/cache/endpoints.cache',

@@ -3,15 +3,18 @@
 namespace AgileAPI\Controllers;
 
 use AgileAPI\AgileAPI;
+use AgileCore\Core\Communication\Mailer;
 use AgileCore\Models\Address;
 use AgileCore\Models\Basket;
 use AgileCore\Models\BasketEntry;
 use AgileCore\Models\Command;
 use AgileCore\Models\Model;
+use AgileCore\Models\Transaction;
 use AgileCore\Models\User;
 use AgileCore\Utils\Dbg;
 use Cake\Core\App;
 use DateTime;
+use Exception;
 use http\Env\Request;
 use Mpdf\MpdfException;
 
@@ -130,6 +133,7 @@ class CommandsController extends Controller {
                 }
 
                 $command = new Command();
+                $command->hydrate($this->payload("command", []));
                 $command->shipping_address_id = $shippingAddress->id;
                 $command->billing_address_id = $billingAddress->id;
                 $command->order_date = new DateTime();
@@ -156,10 +160,15 @@ class CommandsController extends Controller {
                     try {
                         $command->generateInvoicePDF();
                         $command->save();
+                        Transaction::createFromCommand($command, null);
+                        Mailer::orderSuccessMail($command);
                         return $this->success('Commande ' . $command->reference . ' créée', ['command' => $command->toArray()]);
                     } catch (MpdfException $e) {
                         Dbg::logs('Error generating PDF ' . $e->getMessage());
                         return $this->error400("Une erreur est survenue lors de la génération de la facture");
+                    } catch (Exception $e) {
+                        Dbg::logs('Error sending command mail ' . $e->getMessage());
+                        return $this->error400("Une erreur est survenue lors de l'envoi du mail récapitulatif");
                     }
                 } else {
                     return $this->error400("Champ commande invalide (" . $valid . ")");

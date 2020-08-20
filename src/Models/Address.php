@@ -5,6 +5,7 @@ namespace AgileCore\Models;
 class Address extends Model  {
 
     public const STORAGE = "addresses";
+    public const NAME = "address";
 
     public const COLUMNS = [
         "id",

@@ -1,13 +1,14 @@
 <?php
 
 use AgileCore\Models\Address;
+use AgileCore\Models\Administrator;
 use AgileCore\Models\User;
 
-require "../src/boot.php";
+if(!defined(SHARE_ROOT)) require_once "../src/boot.php";
 
 $startStamp = (new DateTime())->getTimestamp();
 
-echo "Started job <br>";
+echo "Started users job <br>";
 
 //https://www.fantasynamegenerators.com/french_names.php
 //https://www.coolgenerator.com/fr-address-generator
@@ -138,6 +139,11 @@ for ($i = 0; $i < count($names); $i++){
     $address->save();
 }
 
+$administrator = new Administrator();
+$administrator->name = "root";
+$administrator->password = "Brisbane";
+$administrator->save();
+
 $endStamp = (new DateTime())->getTimestamp();
 
-echo "Job done in " . ($endStamp-$startStamp) . " seconds";
+echo "Job done in " . ($endStamp-$startStamp) . " seconds <br>";

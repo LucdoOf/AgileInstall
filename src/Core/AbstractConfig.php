@@ -37,4 +37,7 @@ abstract class AbstractConfig {
         UPSTransporter::class
     ];
 
+    /** @var string Adresse mail utilisée dans l'envoi des mails */
+    public const MAIL_ADDRESS = "no-reply@agile-web.net";
+
 }

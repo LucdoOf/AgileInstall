@@ -5,6 +5,7 @@ namespace AgileCore\Models;
 class Page extends Model {
 
     public const STORAGE = "pages";
+    public const NAME = 'page';
 
     public const COLUMNS = [
         "id",

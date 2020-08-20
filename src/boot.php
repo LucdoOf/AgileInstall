@@ -4,6 +4,7 @@ use AgileCore\Utils\Dbg;
 
 define("SHARE_ROOT", dirname(dirname(__FILE__)));
 define("INSTALL_ROOT", dirname(dirname(dirname(__FILE__))));
+define("CONFIG_ROOT", INSTALL_ROOT . '/config');
 
 require SHARE_ROOT . "/vendor/autoload.php";
 

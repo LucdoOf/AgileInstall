@@ -8,6 +8,7 @@ class Product extends Model {
 
     public const STORAGE = "products";
     public const REFERENCE_PREFIX = "PRD";
+    public const NAME = 'product';
 
     public const COLUMNS = [
         "id",
@@ -61,10 +62,10 @@ class Product extends Model {
     }
 
     /**
-     * @see Model
+     * @inheritDoc
      */
-    public function toArray() {
-        $parentArray = parent::toArray();
+    public function toArray($excludedKeys = []) {
+        $parentArray = parent::toArray($excludedKeys);
         if($this->category()->exist()) $parentArray["category"] = $this->category()->toArray();
         $parentArray['linked_medias'] = $this->getLinkedMedias();
         return $parentArray;

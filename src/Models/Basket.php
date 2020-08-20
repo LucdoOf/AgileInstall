@@ -5,6 +5,7 @@ namespace AgileCore\Models;
 class Basket extends Model {
 
     public const STORAGE = "baskets";
+    public const NAME = "basket";
 
     public const COLUMNS = [
       "id",
@@ -13,7 +14,7 @@ class Basket extends Model {
     ];
 
     public const CONDITIONS = [
-        "user_id" => [FILTER_VALIDATE_INT, ['min_range' => 1]],
+        "user_id" => "filterStrictPositiveInt nullable",
         "ip" => "filterIp nullable"
     ];
 
@@ -47,10 +48,10 @@ class Basket extends Model {
     }
 
     /**
-     * @see Model
+     * @inheritDoc
      */
-    public function toArray() {
-        $parentArray = parent::toArray();
+    public function toArray($excludedKeys = []) {
+        $parentArray = parent::toArray($excludedKeys);
         $parentArray["entries"] = [];
         foreach ($this->entries() as $entry){
             if(!is_null($entry)) $parentArray['entries'][] = $entry->toArray();
