@@ -160,6 +160,11 @@ abstract class Model {
      * @return static[]
      */
     public static function page($page, $order=null, $filter = []){
+
+        return static::getAll($filter, $order, static::PAGE_LIMIT, $page*static::PAGE_LIMIT, static::getJoinStr());
+    }
+
+    public static function getJoinStr(){
         $joinStr = "";
         foreach (static::SQL_JOINS as $join){
             $class1 = array_keys($join)[0];
@@ -171,7 +176,7 @@ abstract class Model {
 
             $joinStr .= " LEFT JOIN " . $class1::STORAGE . " AS $class1As ON $var1 = $var2 ";
         }
-        return static::getAll($filter, $order, static::PAGE_LIMIT, $page*static::PAGE_LIMIT, $joinStr);
+        return $joinStr;
     }
 
     /**

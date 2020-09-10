@@ -83,6 +83,16 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
 
     $r->addRoute("GET", "/visits/page/{page:\d+}", VisitsController::class . ".getVisits");
 
+    $r->addRoute("GET", "/commands/{id:\d+}", CommandsController::class . ".getCommand");
+
+    $r->addRoute("GET", "/products/{id:\d+}", ProductsController::class . ".getProduct");
+
+    $r->addRoute("GET", "/stats/products/{id:\d+}/commands", StatsController::class . ".productCommands");
+
+    $r->addRoute("GET", "/users/{id:\d+}", UsersController::class . ".getUser");
+
+    $r->addRoute("GET", "/users/{id:\d+}/commands", UsersController::class . ".getUserCommands");
+
 }, [
     'cacheFile'     => SHARE_ROOT . '/data/cache/endpoints.cache',
     'cacheDisabled' => true,

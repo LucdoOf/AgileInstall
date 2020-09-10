@@ -18,6 +18,15 @@ use DateTime;
 
 class ProductsController extends Controller {
 
+    public function getProduct($id){
+        $product = new Product($id);
+        if($product->exist()) {
+            return $product->toArray();
+        } else {
+            return $this->error404("Produit introuvable");
+        }
+    }
+
     public function getProducts(){
         return Model::listToArray(Product::getAll());
     }

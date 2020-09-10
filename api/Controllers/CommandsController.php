@@ -20,6 +20,15 @@ use Mpdf\MpdfException;
 
 class CommandsController extends Controller {
 
+    public function getCommand($id) {
+        $command = new Command($id);
+        if($command->exist()) {
+            return $command->toArray();
+        } else {
+            return $this->error404("Commande introuvable");
+        }
+    }
+
     public function getCommands(){
         return Model::listToArray(Command::getAll([], "order_date"));
     }

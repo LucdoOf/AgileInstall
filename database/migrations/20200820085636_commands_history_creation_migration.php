@@ -17,6 +17,7 @@ class CommandsHistoryCreationMigration extends AbstractMigration {
             ->addColumn('transporter_id', 'integer')
             ->addColumn('shipping_fees', 'float')
             ->addColumn('tracking_number', 'string', ['null' => true])
+            ->addColumn('history_date', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->save();
     }
 
