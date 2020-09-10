@@ -97,3 +97,4 @@ return FastRoute\cachedDispatcher(function (FastRoute\RouteCollector $r) {
     'cacheFile'     => SHARE_ROOT . '/data/cache/endpoints.cache',
     'cacheDisabled' => true,
 ]);
+
